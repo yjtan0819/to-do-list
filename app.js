@@ -29,6 +29,12 @@ const item3 = new Item({
 });
 
 const defaultItems = [item1, item2, item3];
+const listSchema = {
+  name: String,
+  items: [itemsSchema],
+};
+
+const List = mongoose.model("List", listSchema);
 
 // Item.insertMany(defaultItems, function(err){
 //   if (err) {
@@ -67,23 +73,35 @@ app.post("/", (req, res) => {
 
 app.post("/delete", (req, res) => {
   const checkedItemId = req.body.checkbox;
-  Item.findByIdAndRemove(checkedItemId
-    , function (err) {
-      if (!err) {
-        console.log("Successfully deleted checked item.");
-        res.redirect("/");
+  Item.findByIdAndRemove(checkedItemId, function (err) {
+    if (!err) {
+      console.log("Successfully deleted checked item.");
+      res.redirect("/");
+    }
+  });
+});
+
+app.get("/:customListName", (req, res) => {
+  const customListName = req.params.customListName;
+
+  List.findOne({ name: customListName }, function (err, foundList) {
+    if (!err) {
+      if (!foundList) {
+        const list = new List({
+          name: customListName,
+          items: defaultItems,
+        });
+
+        list.save();
+        res.redirect("/" + customListName);
+      } else {
+        res.render("list", {
+          listTitle: foundList.name,
+          newListItem: foundList.items,
+        });
       }
-    });
-});
-
-app.get("/work", (req, res) => {
-  res.render("list", { listTitle: "Work List", newListItem: workItems });
-});
-
-app.post("/work", (req, res) => {
-  let item = req.body.newItem;
-  workItems.push(item);
-  res.redirect("/work");
+    }
+  });
 });
 
 app.get("/about", (req, res) => {
