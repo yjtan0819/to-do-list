@@ -2,16 +2,15 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require("ejs");
 const date = require(__dirname + "/date.js");
+const mongoose = require("mongoose");
 const app = express();
 const port = 3000;
 
-const items = ["Buy Food", "Cook Food", "Eat Food"];
-let workItems = [];
 
 app.set("view engine", "ejs");
-
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
+mongoose.connect("mongodb://localhost:27017/todolistDB");
 
 app.get("/", (req, res) => {
   let day = date.getDate();
