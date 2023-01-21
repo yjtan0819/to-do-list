@@ -5,11 +5,13 @@ const mongoose = require("mongoose");
 const _ = require("lodash");
 const app = express();
 const port = 3000;
+var config = require("./config.json");
+var password = config.password;
 
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
-mongoose.connect("mongodb://localhost:27017/todolistDB");
+mongoose.connect("mongodb+srv://yjtan0819:" + password + "@cluster0.5yby9v0.mongodb.net/todolistDB");
 
 const itemsSchema = {
   name: String,
